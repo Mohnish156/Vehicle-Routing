@@ -16,9 +16,14 @@ def calculate_euclidean_distance(px, py, index1, index2):
 
     # TODO - Implement the euclidean distance function.
 
-    
+    node1x = px[index1]
+    node1y = py[index1]
 
-    return None
+    node2x = px[index2]
+    node2y = py[index2]
+
+    distance = math.sqrt(pow((node1x-node2x),2) + (pow((node1y-node2y),2)))    
+    return distance
 
 
 def calculate_total_distance(routes, px, py, depot):
@@ -35,7 +40,15 @@ def calculate_total_distance(routes, px, py, depot):
 
     # TODO - Implement function for finding the total euclidean distance of the learned tour.
 
-    return None
+    
+    totalDistance = 0
+    for route in routes:
+        size_route = len(route)
+        for node in range(size_route-1):
+            totalDistance += calculate_euclidean_distance(px,py,node,node + 1)
+
+
+    return totalDistance
 
 
 def visualise_solution(vrp_sol, px, py, depot, title):

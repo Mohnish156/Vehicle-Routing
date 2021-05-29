@@ -21,10 +21,10 @@ def main():
     # Executing and visualizing the nearest neighbour VRP heuristic.
     # Uncomment it to do your assignment!
 
-    # nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
-    # nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
-    # print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
-    # utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
+    nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
+    nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
+    print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
+    utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
 
     # Executing and visualizing the saving VRP heuristic.
     # Uncomment it to do your assignment!
@@ -50,7 +50,55 @@ def nearest_neighbour_heuristic(px, py, demand, capacity, depot):
 
     # TODO - Implement the Nearest Neighbour Heuristic to generate VRP solutions.
 
-    return None
+    #initilise a solution 
+    #Append nearest feasible node to the end of current route
+    #   Must be univisited, After inserting, route cost should not exceed capacity
+    #if none is found return to depot and create a new route
+
+    routes = [[]]
+    visited = list()
+    nodes = list()
+    for node in range(len(px)):
+        nodes.append(node)
+
+    current_route = 0
+    routes[current_route].insert(0,depot)
+    for node in nodes:
+       
+        if(len(visited) != len(nodes)):
+
+            if(visited.count(node)==0):
+                nearest_node = find_nearest_neighbour(px,py,node)
+                routes[current_route].append(nearest_node)
+                visited.append(nearest_node)
+            if(find_route_demand(demand)>capacity):
+                visited.remove(nearest_node)
+                routes[current_route].remove(nearest_node)
+                current_route+=1
+                routes[current_route].insert(depot,0)
+
+    return routes
+
+def find_route_demand(demand):
+    total_demand = 0;
+
+    for value in demand:
+        total_demand+=value
+
+    return total_demand
+
+def find_nearest_neighbour(px, py, node):
+    nearest_node = 0
+    distance  = 999999
+
+
+    for node1 in range(len(px)):
+        euclidean_distance = utility.calculate_euclidean_distance(px,py,node,node)
+        if(euclidean_distance<distance):
+            distance = euclidean_distance
+            nearest_node = node1
+
+    return nearest_node
 
 
 def savings_heuristic(px, py, demand, capacity, depot):
