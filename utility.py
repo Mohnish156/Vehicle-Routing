@@ -3,7 +3,6 @@ import math
 
 
 def calculate_euclidean_distance(px, py, index1, index2):
-
     """
     Calculating the Euclidean distances between two nodes
 
@@ -22,12 +21,11 @@ def calculate_euclidean_distance(px, py, index1, index2):
     node2x = px[index2]
     node2y = py[index2]
 
-    distance = math.sqrt(pow((node1x-node2x),2) + (pow((node1y-node2y),2)))    
+    distance = math.sqrt(pow((node1x - node2x), 2) + (pow((node1y - node2y), 2)))
     return distance
 
 
 def calculate_total_distance(routes, px, py, depot):
-
     """
     Calculating the total Euclidean distance of a solution.
 
@@ -39,20 +37,20 @@ def calculate_total_distance(routes, px, py, depot):
     """
 
     # TODO - Implement function for finding the total euclidean distance of the learned tour.
+    #
+    total_distance = calculate_euclidean_distance(px, py, depot, routes[0][0])
 
-    
-    totalDistance = 0
     for route in routes:
-        size_route = len(route)
-        for node in range(size_route-1):
-            totalDistance += calculate_euclidean_distance(px,py,node,node + 1)
+        node1 = depot
+        for node in route:
+            total_distance += calculate_euclidean_distance(px, py, node1, node)
+            node1 = node
 
-
-    return totalDistance
+    total_distance += calculate_euclidean_distance(px, py, depot, node1)
+    return total_distance
 
 
 def visualise_solution(vrp_sol, px, py, depot, title):
-
     """
     Function for visualise the tour on a 2D figure.
 
@@ -93,7 +91,7 @@ def visualise_solution(vrp_sol, px, py, depot, title):
         plt.plot([px[a_route[-1]], px[depot]], [py[a_route[-1]], py[depot]], color=cmap(k))
 
         # Draw the route: one by one
-        for i in range(0, len(a_route)-1):
+        for i in range(0, len(a_route) - 1):
             plt.plot([px[a_route[i]], px[a_route[i + 1]]], [py[a_route[i]], py[a_route[i + 1]]], color=cmap(k))
             plt.plot(px[a_route[i]], py[a_route[i]], 'co', markersize=5, color=cmap(k))
 
