@@ -38,15 +38,15 @@ def calculate_total_distance(routes, px, py, depot):
 
     # TODO - Implement function for finding the total euclidean distance of the learned tour.
     #
-    total_distance = calculate_euclidean_distance(px, py, depot, routes[0][0])
-
+    total_distance = 0
+    node1 = 0
     for route in routes:
         node1 = depot
         for node in route:
             total_distance += calculate_euclidean_distance(px, py, node1, node)
             node1 = node
+        total_distance += calculate_euclidean_distance(px, py, node1, depot)
 
-    total_distance += calculate_euclidean_distance(px, py, depot, node1)
     return total_distance
 
 
