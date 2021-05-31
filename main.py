@@ -1,10 +1,16 @@
 import utility as utility
 import loader as loader
+import itertools
 import numpy as np
 
 routes = list()
 visited = list()
 current_trip = []
+current_trip2 = []
+visited2 = list()
+routes2 = list()
+
+all_pairs = list(list())
 
 
 def main():
@@ -24,19 +30,18 @@ def main():
     # Executing and visualizing the nearest neighbour VRP heuristic.
     # Uncomment it to do your assignment!
 
-    nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
-    # nnh_solution = final
-    nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
-    print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
-    utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
+    # nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
+    # nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
+    # print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
+    # utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
 
     # Executing and visualizing the saving VRP heuristic.
     # Uncomment it to do your assignment!
 
-    # sh_solution = savings_heuristic(px, py, demand, capacity, depot)
-    # sh_distance = utility.calculate_total_distance(sh_solution, px, py, depot)
-    # print("Saving VRP Heuristic Distance:", sh_distance)
-    # utility.visualise_solution(sh_solution, px, py, depot, "Savings Heuristic")
+    sh_solution = savings_heuristic(px, py, demand, capacity, depot)
+    sh_distance = utility.calculate_total_distance(sh_solution, px, py, depot)
+    print("Saving VRP Heuristic Distance:", sh_distance)
+    utility.visualise_solution(sh_solution, px, py, depot, "Savings Heuristic")
 
 
 def nearest_neighbour_heuristic(px, py, demand, capacity, depot):
@@ -129,8 +134,78 @@ def savings_heuristic(px, py, demand, capacity, depot):
     """
 
     # TODO - Implement the Saving Heuristic to generate VRP solutions.
+    nodes = list()
+    for i in range(len(px)):
+        nodes.append(i)
 
+    nodes.remove(depot)
+
+    ordered_links = calculate_savings(nodes, depot, px, py)
+    ordered_links_list = list()
+
+    for link in ordered_links:
+        ordered_links_list.append(list(link))
+
+    nodes_in_order = list()
+    for link in ordered_links:
+        for node in link:
+            nodes_in_order.append(node)
+
+    compute_merged_routes(nodes_in_order, capacity, demand)
+    return routes2
+
+
+def compute_merged_routes(savings_order, capacity, demand):
+    for node in savings_order:
+        if not current_trip2.__contains__(node) and not visited2.__contains__(node):
+            current_trip2.append(node)
+            if not find_route_feasible(capacity, demand, current_trip2):
+                current_trip2.remove(node)
+                temp = current_trip2.copy()
+                print(temp)
+                routes2.append(temp)
+                for added_node in current_trip2:
+                    visited2.append(added_node)
+                current_trip2.clear()
     return None
+
+
+def find_route_feasible(capacity, demand, trip):
+    feasible = False
+    total_demand = 0
+    for node in trip:
+        total_demand += demand[node]
+
+    if total_demand <= capacity:
+        feasible = True
+
+    return feasible
+
+
+def calculate_savings(nodes, depot, px, py):
+    pair_order_list = itertools.combinations(nodes, 2)
+    links = list(pair_order_list)
+
+    savings = list()
+    for link in links:
+        saving = utility.calculate_euclidean_distance(px, py, link[0], depot) + \
+                 utility.calculate_euclidean_distance(px, py, link[1], depot) - \
+                 utility.calculate_euclidean_distance(px, py, link[0], link[1])
+        savings.append(saving)
+
+    links_ordered = list()
+
+    savings.sort(reverse=True)
+
+    for saving in savings:
+        for link in links:
+            saving2 = utility.calculate_euclidean_distance(px, py, link[0], depot) + \
+                      utility.calculate_euclidean_distance(px, py, link[1], depot) - \
+                      utility.calculate_euclidean_distance(px, py, link[0], link[1])
+            if saving == saving2 and not links_ordered.__contains__(link):
+                links_ordered.append(link)
+
+    return links_ordered
 
 
 if __name__ == '__main__':
