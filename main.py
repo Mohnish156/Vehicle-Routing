@@ -9,8 +9,8 @@ current_trip = []
 current_trip2 = []
 visited2 = list()
 routes2 = list()
-
 all_pairs = list(list())
+stop = [1]
 
 
 def main():
@@ -30,10 +30,10 @@ def main():
     # Executing and visualizing the nearest neighbour VRP heuristic.
     # Uncomment it to do your assignment!
 
-    # nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
-    # nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
-    # print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
-    # utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
+    nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
+    nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
+    print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
+    utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
 
     # Executing and visualizing the saving VRP heuristic.
     # Uncomment it to do your assignment!
@@ -59,14 +59,13 @@ def nearest_neighbour_heuristic(px, py, demand, capacity, depot):
     # TODO - Implement the Nearest Neighbour Heuristic to generate VRP solutions.
     visited.append(depot)
     find_routes(depot, capacity, demand, px, py, depot)
-
-    leftover = [15]
-    routes.append(leftover)
+    routes.pop(len(routes)-1)
+    print(routes)
     return routes
 
 
 def find_routes(node, capacity, demand, px, py, depot):
-    if len(visited) < len(px):
+    if len(stop) == 1:
         most_feasible = -1
         for neighbour in find_nearest_neighbours(px, py, node):
             if not visited.__contains__(neighbour):
@@ -81,6 +80,8 @@ def find_routes(node, capacity, demand, px, py, depot):
 
         if most_feasible == -1:
             temp = current_trip.copy()
+            if len(temp) == 0:
+                stop.clear()
             routes.append(temp)
             current_trip.clear()
             find_routes(depot, capacity, demand, px, py, depot)
@@ -162,7 +163,6 @@ def compute_merged_routes(savings_order, capacity, demand):
             if not find_route_feasible(capacity, demand, current_trip2):
                 current_trip2.remove(node)
                 temp = current_trip2.copy()
-                print(temp)
                 routes2.append(temp)
                 for added_node in current_trip2:
                     visited2.append(added_node)
